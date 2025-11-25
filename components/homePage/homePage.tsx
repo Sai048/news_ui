@@ -152,7 +152,7 @@ const HomePage = () => {
       )} */}
 
       <div
-        className={`flex justify-center md:justify-end gap-4 ${
+        className={`flex justify-center md:justify-end gap-4 mt-2 ${
           spinner
             ? "fixed bottom-4 right-4 bg-white p-3 rounded-lg shadow-lg"
             : ""
