@@ -35,11 +35,15 @@ const HomePage = () => {
   const fetchData = async () => {
     try {
       setSpinner(true);
+      if (localStorage.getItem("Category")) {
+        setSelected(localStorage.getItem("Category") || "");
+      }
       const response = await fetch(
         `/api/headline?category=${selected}&page=${page}&pageSize=${pageSize}`
       );
       const result = await response.json();
       setData(result.articles);
+      localStorage.setItem("Category", selected);
       console.log;
       setTotalPages(Math.ceil(result.totalResults / pageSize));
       setSpinner(false);
@@ -60,6 +64,10 @@ const HomePage = () => {
     try {
       if (searchTerm.length > 1) {
         setSpinner(true);
+      //    if (localStorage.getItem("searchTerm")) {
+      //   setSelected(localStorage.getItem("searchTerm") || "");
+      // }
+        localStorage.setItem("searchTerm", searchTerm);
         const response = await fetch(
           `/api/search?query=${searchTerm}&page=${page}&pageSize=${pageSize}`
         );
