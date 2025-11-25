@@ -15,6 +15,7 @@ const categories = [
 
 const HomePage = () => {
   const [data, setData] = useState([]);
+  const [spinner, setSpinner] = useState(false);
   const [open, setOpen] = useState(false);
   // const [selectedArticle, setSelectedArticle] = useState(null);
   const [page, setPage] = useState(1);
@@ -33,6 +34,7 @@ const HomePage = () => {
 
   const fetchData = async () => {
     try {
+      setSpinner(true);
       const response = await fetch(
         `/api/headline?category=${selected}&page=${page}&pageSize=${pageSize}`
       );
@@ -40,6 +42,7 @@ const HomePage = () => {
       setData(result.articles);
       console.log;
       setTotalPages(Math.ceil(result.totalResults / pageSize));
+      setSpinner(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -56,11 +59,13 @@ const HomePage = () => {
   const fetchDataBySearch = async () => {
     try {
       if (searchTerm.length > 1) {
+        setSpinner(true);
         const response = await fetch(
           `/api/search?query=${searchTerm}&page=${page}&pageSize=${pageSize}`
         );
         const data = await response.json();
         setData(data);
+        setSpinner(false);
       }
     } catch (error) {
       console.error("Error fetching search data:", error);
@@ -104,7 +109,13 @@ const HomePage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-        {data && data.length > 0 ? (
+        {spinner ? (
+          <div className="flex justify-center items-center col-span-3 min-h-[300px]">
+            <div className="relative w-16 h-16 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 border-gray-300 animate-spin" />
+            </div>
+          </div>
+        ) : (
           data.map((article: any, index: number) => (
             <div
               key={index}
@@ -125,12 +136,6 @@ const HomePage = () => {
               </a>
             </div>
           ))
-        ) : (
-          <div className="flex justify-center items-center col-span-3 min-h-[300px]">
-            <div className="relative w-16 h-16 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 border-gray-300 animate-spin" />
-            </div>
-          </div>
         )}
       </div>
 
@@ -138,7 +143,13 @@ const HomePage = () => {
         <Popup open={open} onClose={onClose} data={selectedArticle} />
       )} */}
 
-     <div className="flex justify-center md:justify-end gap-4 fixed bottom-4 right-4 bg-white p-3 rounded-lg shadow-lg">
+      <div
+        className={`flex justify-center md:justify-end gap-4 ${
+          spinner
+            ? "fixed bottom-4 right-4 bg-white p-3 rounded-lg shadow-lg"
+            : ""
+        }`}
+      >
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
